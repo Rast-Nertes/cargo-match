@@ -1,0 +1,76 @@
+%% ER-диаграмма (логическая модель, 3NF)
+erDiagram
+    USERS ||--o{ CARGO_REQUESTS : "создаёт"
+    USERS ||--o{ TRIPS : "ведёт как перевозчик"
+    USERS ||--o{ VEHICLES : "владеет"
+    VEHICLES ||--o{ TRIPS : "используется в"
+    CARGO_REQUESTS ||--o{ MATCHES : "сопоставляется"
+    TRIPS ||--o{ MATCHES : "предлагается для"
+
+    USERS {
+        bigint id PK
+        varchar email UK "NOT NULL"
+        varchar hashed_password "NOT NULL"
+        varchar full_name "NOT NULL"
+        varchar company_name
+        varchar phone
+        enum role "shipper|carrier|admin"
+        boolean is_active "NOT NULL DEFAULT true"
+        timestamptz created_at
+    }
+
+    VEHICLES {
+        bigint id PK
+        bigint carrier_id FK "NOT NULL, INDEX"
+        varchar plate_number UK "NOT NULL"
+        varchar vehicle_type "NOT NULL"
+        numeric capacity_kg "NOT NULL CHECK > 0"
+        numeric capacity_m3 "CHECK > 0"
+        boolean is_active "NOT NULL"
+    }
+
+    CARGO_REQUESTS {
+        bigint id PK
+        bigint owner_id FK "NOT NULL, INDEX"
+        varchar origin_city "NOT NULL, INDEX"
+        varchar destination_city "NOT NULL, INDEX"
+        text cargo_description "NOT NULL"
+        numeric weight_kg "NOT NULL CHECK > 0"
+        numeric volume_m3
+        date pickup_date_from "NOT NULL"
+        date pickup_date_to
+        date delivery_date
+        numeric price
+        char currency "DEFAULT RUB"
+        enum status "draft|published|..."
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    TRIPS {
+        bigint id PK
+        bigint carrier_id FK "NOT NULL, INDEX"
+        bigint vehicle_id FK "INDEX"
+        varchar origin_city "NOT NULL, INDEX"
+        varchar destination_city "NOT NULL, INDEX"
+        date departure_date "NOT NULL, INDEX"
+        date arrival_date
+        varchar vehicle_type "NOT NULL"
+        numeric capacity_kg "NOT NULL"
+        numeric free_capacity_kg "NOT NULL CHECK >= 0"
+        boolean is_return_leg "INDEX"
+        enum status "available|..."
+        timestamptz created_at
+    }
+
+    MATCHES {
+        bigint id PK
+        bigint cargo_request_id FK "NOT NULL, INDEX"
+        bigint trip_id FK "NOT NULL, INDEX"
+        numeric score "NOT NULL CHECK 0-100"
+        boolean is_backhaul "NOT NULL"
+        enum status "suggested|accepted|..."
+        text comment
+        timestamptz created_at
+        unique cargo_trip "UNIQUE(cargo_request_id, trip_id)"
+    }

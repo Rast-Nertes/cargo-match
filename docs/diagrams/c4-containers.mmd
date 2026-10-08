@@ -1,0 +1,28 @@
+%% C4 Model — Level 2: Container Diagram
+%% Тема: платформа агрегации заявок на грузоперевозки с учётом обратных рейсов
+%% Инструмент: https://mermaid.js.org/
+
+flowchart TB
+    subgraph actors["Акторы"]
+        shipper["Грузовладелец<br/>(Shipper)"]
+        carrier["Перевозчик<br/>(Carrier)"]
+        admin["Администратор<br/>(Admin)"]
+    end
+
+    subgraph system["CargoMatch Platform"]
+        spa["Web Client<br/>Vue 3 + Tailwind CSS 4<br/>SPA, Vite"]
+        api["Backend API<br/>Python FastAPI<br/>async REST /api/v1"]
+        matcher["Matching Service<br/>модуль scoring<br/>прямые и backhaul-рейсы"]
+        db[("PostgreSQL<br/>cargo_platform")]
+        redis[("Redis<br/>очередь задач<br/>сопоставления<br/>(этап 2)")]
+    end
+
+    shipper -->|"HTTPS JSON"| spa
+    carrier -->|"HTTPS JSON"| spa
+    admin -->|"HTTPS JSON"| spa
+
+    spa -->|"REST + JWT"| api
+    api --> matcher
+    api -->|"async SQLAlchemy<br/>asyncpg"| db
+    matcher -->|"кэш кандидатов"| redis
+    matcher --> db

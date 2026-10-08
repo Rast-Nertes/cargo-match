@@ -1,0 +1,16 @@
+%% C4 Model — Level 1: System Context (дополнительно к заданию Lab#01)
+flowchart LR
+    shipper["Грузовладелец"]
+    carrier["Перевозчик"]
+    admin["Администратор"]
+
+    system["CargoMatch<br/>Веб-платформа сопоставления<br/>грузоперевозок"]
+
+    email["Email / SMS<br/>уведомления<br/>(внешний сервис)"]
+    maps["Картографический API<br/>(опционально)"]
+
+    shipper --> system
+    carrier --> system
+    admin --> system
+    system --> email
+    system -.-> maps
