@@ -61,7 +61,9 @@ CargoMatch — веб-платформа, которая:
 | UC-14 | Аналитика | Статистика по matches, доля backhaul |
 | UC-15 | Настройка scoring | Веса критериев сопоставления (этап 2) |
 
-Диаграмма прецедентов (исходник): [`docs/diagrams/use-cases.mmd`](docs/diagrams/use-cases.mmd)
+Диаграмма прецедентов: [`docs/diagrams/use-cases.mmd`](docs/diagrams/use-cases.mmd)
+
+![Use Cases](docs/diagrams/use-cases.svg)
 
 ```mermaid
 flowchart TB
