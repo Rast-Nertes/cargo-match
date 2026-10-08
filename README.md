@@ -8,8 +8,9 @@
 
 | Путь | Описание |
 |------|----------|
-| [`ARCHITECTURE.md`](ARCHITECTURE.md) | Лабораторная работа №1: Use Cases, C4, ERD |
-| [`docs/diagrams/`](docs/diagrams/) | Исходники диаграмм (Mermaid) |
+| [`ARCHITECTURE.md`](ARCHITECTURE.md) | Архитектура: Use Cases, C4, ERD (Lab#01) |
+| [`docs/LAB01_REPORT.md`](docs/LAB01_REPORT.md) | Отчёт по лабораторной работе №1 |
+| [`docs/diagrams/`](docs/diagrams/) | Диаграммы Mermaid, PlantUML, SVG |
 | [`backend/`](backend/) | FastAPI, async SQLAlchemy, API `/api/v1` |
 | [`frontend/`](frontend/) | Vue 3 + Tailwind CSS 4 (Vite) |
 | [`main.py`](main.py) | Запуск backend-сервера |
@@ -55,10 +56,11 @@ UI: http://localhost:5173
 
 ## Лабораторная работа №1
 
-Требования задания ([Lab#01_Architecture.pdf](https://drive.google.com/file/d/1DbGneXNqwrZ2HDeS1qDw4iAqQ_xSyVjU/view)) выполнены в:
+Лабораторная работа №1 ([Lab#01_Architecture.pdf](https://drive.google.com/file/d/1DbGneXNqwrZ2HDeS1qDw4iAqQ_xSyVjU/view)) **выполнена полностью**:
 
-- `ARCHITECTURE.md` — отчёт (роли, Use Cases, C4 Container, ERD, 3NF);
-- `docs/diagrams/*.mmd` — исходные диаграммы Mermaid.
+- [`docs/LAB01_REPORT.md`](docs/LAB01_REPORT.md) — чек-лист и отчёт для сдачи;
+- [`ARCHITECTURE.md`](ARCHITECTURE.md) — архитектурный документ;
+- [`docs/diagrams/`](docs/diagrams/) — Mermaid, PlantUML, SVG-экспорт.
 
 ## Лицензия
 

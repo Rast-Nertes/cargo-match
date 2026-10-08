@@ -1,0 +1,27 @@
+@startuml c4-containers
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title CargoMatch — C4 Container (Level 2)
+
+Person(shipper, "Грузовладелец", "Публикует заявки")
+Person(carrier, "Перевозчик", "Создаёт рейсы")
+Person(admin, "Администратор", "Модерация и аналитика")
+
+System_Boundary(cargo, "CargoMatch Platform") {
+    Container(spa, "Web Client", "Vue 3, Tailwind 4", "SPA интерфейс")
+    Container(api, "Backend API", "FastAPI async", "REST /api/v1, JWT")
+    Container(matcher, "Matching Service", "Python", "Scoring заявок и backhaul")
+    ContainerDb(db, "PostgreSQL", "PostgreSQL 15+", "cargo_platform")
+    ContainerDb(redis, "Redis", "Redis 7", "Очередь matching (этап 2)")
+}
+
+Rel(shipper, spa, "HTTPS")
+Rel(carrier, spa, "HTTPS")
+Rel(admin, spa, "HTTPS")
+Rel(spa, api, "JSON / JWT")
+Rel(api, matcher, "вызов")
+Rel(api, db, "async SQLAlchemy")
+Rel(matcher, db, "чтение/запись")
+Rel(matcher, redis, "кэш/очередь")
+
+@enduml

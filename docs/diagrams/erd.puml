@@ -1,0 +1,64 @@
+@startuml erd-cargo-match
+hide circle
+skinparam linetype ortho
+
+entity "users" as users {
+  * id : BIGINT <<PK>>
+  --
+  email : VARCHAR(255) <<UK>>
+  hashed_password : VARCHAR(255)
+  full_name : VARCHAR(255)
+  role : ENUM
+  is_active : BOOLEAN
+  created_at : TIMESTAMPTZ
+}
+
+entity "vehicles" as vehicles {
+  * id : BIGINT <<PK>>
+  --
+  carrier_id : BIGINT <<FK>>
+  plate_number : VARCHAR(16) <<UK>>
+  vehicle_type : VARCHAR(64)
+  capacity_kg : NUMERIC
+  is_active : BOOLEAN
+}
+
+entity "cargo_requests" as cargo_requests {
+  * id : BIGINT <<PK>>
+  --
+  owner_id : BIGINT <<FK>>
+  origin_city : VARCHAR(128)
+  destination_city : VARCHAR(128)
+  weight_kg : NUMERIC
+  status : ENUM
+}
+
+entity "trips" as trips {
+  * id : BIGINT <<PK>>
+  --
+  carrier_id : BIGINT <<FK>>
+  vehicle_id : BIGINT <<FK>>
+  departure_date : DATE
+  free_capacity_kg : NUMERIC
+  is_return_leg : BOOLEAN
+  status : ENUM
+}
+
+entity "matches" as matches {
+  * id : BIGINT <<PK>>
+  --
+  cargo_request_id : BIGINT <<FK>>
+  trip_id : BIGINT <<FK>>
+  score : NUMERIC
+  is_backhaul : BOOLEAN
+  status : ENUM
+}
+
+users ||--o{ cargo_requests : owner_id
+users ||--o{ trips : carrier_id
+users ||--o{ vehicles : carrier_id
+vehicles ||--o{ trips : vehicle_id
+cargo_requests ||--o{ matches : cargo_request_id
+trips ||--o{ matches : trip_id
+
+@enduml

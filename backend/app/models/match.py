@@ -2,7 +2,7 @@ import enum
 from datetime import datetime
 from decimal import Decimal
 
-from sqlalchemy import DateTime, Enum, ForeignKey, Numeric, Text, func
+from sqlalchemy import DateTime, Enum, ForeignKey, Numeric, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -19,6 +19,13 @@ class Match(Base):
     """Результат автоматического сопоставления заявки с рейсом."""
 
     __tablename__ = "matches"
+    __table_args__ = (
+        UniqueConstraint(
+            "cargo_request_id",
+            "trip_id",
+            name="uq_matches_cargo_request_trip",
+        ),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     cargo_request_id: Mapped[int] = mapped_column(

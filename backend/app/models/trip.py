@@ -24,6 +24,9 @@ class Trip(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     carrier_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    vehicle_id: Mapped[int | None] = mapped_column(
+        ForeignKey("vehicles.id"), nullable=True, index=True
+    )
 
     origin_city: Mapped[str] = mapped_column(String(128), index=True)
     destination_city: Mapped[str] = mapped_column(String(128), index=True)
@@ -47,8 +50,10 @@ class Trip(Base):
     )
 
     carrier: Mapped["User"] = relationship(back_populates="trips")
+    vehicle: Mapped["Vehicle | None"] = relationship(back_populates="trips")
     matches: Mapped[list["Match"]] = relationship(back_populates="trip")
 
 
 from app.models.match import Match  # noqa: E402
 from app.models.user import User  # noqa: E402
+from app.models.vehicle import Vehicle  # noqa: E402

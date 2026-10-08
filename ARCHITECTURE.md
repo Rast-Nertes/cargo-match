@@ -111,7 +111,9 @@ flowchart TB
 
 ## 5. C4 Model — Container (уровень 2)
 
-Исходный файл: [`docs/diagrams/c4-containers.mmd`](docs/diagrams/c4-containers.mmd)
+Исходные файлы: [`docs/diagrams/c4-containers.mmd`](docs/diagrams/c4-containers.mmd), [`docs/diagrams/c4-containers.puml`](docs/diagrams/c4-containers.puml)
+
+![C4 Container Diagram](docs/diagrams/c4-containers.svg)
 
 ```mermaid
 flowchart TB
@@ -147,7 +149,11 @@ flowchart TB
 | **PostgreSQL** | 15+ | Персистентное хранение, транзакции, FK |
 | **Redis** | 7+ (план) | Очередь фонового пересчёта matches, кэш |
 
-Дополнительно (контекст системы, C4 Level 1): [`docs/diagrams/c4-context.mmd`](docs/diagrams/c4-context.mmd)
+### C4 Level 1 — System Context
+
+[`docs/diagrams/c4-context.mmd`](docs/diagrams/c4-context.mmd)
+
+![C4 Context Diagram](docs/diagrams/c4-context.svg)
 
 ---
 
@@ -155,7 +161,9 @@ flowchart TB
 
 Проектирование выполнено в **3-й нормальной форме**: неключевые атрибуты зависят только от первичного ключа; повторяющиеся группы вынесены в отдельные таблицы (`vehicles`, `matches`).
 
-Исходник: [`docs/diagrams/erd.mmd`](docs/diagrams/erd.mmd)
+Исходники: [`docs/diagrams/erd.mmd`](docs/diagrams/erd.mmd), [`docs/diagrams/erd.puml`](docs/diagrams/erd.puml)
+
+![ER Diagram](docs/diagrams/erd.svg)
 
 ```mermaid
 erDiagram
@@ -272,7 +280,9 @@ erDiagram
 
 ### Соответствие реализации
 
-В репозитории уже реализованы ORM-модели: `users`, `cargo_requests`, `trips`, `matches` (`backend/app/models/`). Таблица `vehicles` и связь `trips.vehicle_id` запланированы на следующий спринт (миграция Alembic).
+ORM-модели в `backend/app/models/` соответствуют ERD: `users`, `vehicles`, `cargo_requests`, `trips`, `matches` (уникальность пары заявка+рейс — `UniqueConstraint` в `matches`).
+
+Полный отчёт по лабораторной: [`docs/LAB01_REPORT.md`](docs/LAB01_REPORT.md).
 
 ---
 
@@ -295,7 +305,7 @@ erDiagram
 - *Монолит* — единое приложение и БД; проще разработка, деплой и транзакции; минус — сложнее независимое масштабирование частей.
 - *Микросервисы* — независимые сервисы и БД; гибкое масштабирование и технологии; минус — распределённые транзакции, сеть, observability.
 
-Для CargoMatch на этапе диплoma выбран модульный монолит с возможностью вынести Matching в отдельный сервис.
+Для CargoMatch на этапе диплома выбран модульный монолит с возможностью вынести Matching в отдельный сервис.
 
 **2. Зачем 3NF**
 

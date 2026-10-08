@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" font-family="Segoe UI, Arial, sans-serif" font-size="12">
+  <rect width="800" height="360" fill="#f8fafc"/>
+  <text x="400" y="24" text-anchor="middle" font-size="16" font-weight="bold">Use Cases  CargoMatch</text>
+  <ellipse cx="80" cy="120" rx="55" ry="28" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="80" y="125" text-anchor="middle">Shipper</text>
+  <ellipse cx="80" cy="260" rx="55" ry="28" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="80" y="265" text-anchor="middle">Carrier</text>
+  <rect x="180" y="70" width="560" height="110" rx="8" fill="#fff" stroke="#94a3b8" stroke-dasharray="6"/>
+  <text x="200" y="92" font-weight="bold">@C7>2;045;5F</text>
+  <text x="200" y="112">UC-01..06: @538AB@0F8O, 70O2:0, ?C1;8:0F8O, matches, ?@8=OB85, >B<5=0</text>
+  <rect x="180" y="210" width="560" height="110" rx="8" fill="#fff" stroke="#94a3b8" stroke-dasharray="6"/>
+  <text x="200" y="232" font-weight="bold">5@52>7G8:</text>
+  <text x="200" y="252">UC-07..12: @538AB@0F8O, @59A, backhaul, Q<:>ABL, 70O2:8, ?>4B25@645=85</text>
+  <line x1="135" y1="120" x2="180" y2="120" stroke="#64748b"/>
+  <line x1="135" y1="260" x2="180" y2="260" stroke="#64748b"/>
+</svg>

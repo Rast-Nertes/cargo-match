@@ -32,7 +32,9 @@ class User(Base):
         back_populates="owner", foreign_keys="CargoRequest.owner_id"
     )
     trips: Mapped[list["Trip"]] = relationship(back_populates="carrier")
+    vehicles: Mapped[list["Vehicle"]] = relationship(back_populates="carrier")
 
 
 from app.models.cargo_request import CargoRequest  # noqa: E402
 from app.models.trip import Trip  # noqa: E402
+from app.models.vehicle import Vehicle  # noqa: E402

@@ -13,6 +13,7 @@ from app.models import (  # noqa: F401 — регистрация моделей
     Match,
     Trip,
     User,
+    Vehicle,
 )
 
 config = context.config
