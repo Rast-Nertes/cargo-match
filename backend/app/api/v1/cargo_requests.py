@@ -54,3 +54,12 @@ async def update_cargo_request(
     await db.flush()
     await db.refresh(item)
     return item
+
+
+@router.delete("/{request_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_cargo_request(request_id: int, db: DbSession) -> None:
+    result = await db.execute(select(CargoRequest).where(CargoRequest.id == request_id))
+    item = result.scalar_one_or_none()
+    if not item:
+        raise HTTPException(status_code=404, detail="Заявка не найдена")
+    await db.delete(item)

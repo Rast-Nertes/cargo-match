@@ -45,3 +45,12 @@ async def update_trip(trip_id: int, payload: TripUpdate, db: DbSession) -> Trip:
     await db.flush()
     await db.refresh(item)
     return item
+
+
+@router.delete("/{trip_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_trip(trip_id: int, db: DbSession) -> None:
+    result = await db.execute(select(Trip).where(Trip.id == trip_id))
+    item = result.scalar_one_or_none()
+    if not item:
+        raise HTTPException(status_code=404, detail="Рейс не найден")
+    await db.delete(item)

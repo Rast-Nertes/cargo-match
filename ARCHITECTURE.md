@@ -288,7 +288,35 @@ ORM-модели в `backend/app/models/` соответствуют ERD: `users
 
 ---
 
-## 7. Стек технологий
+## 7. REST API Specs (Lab#02)
+
+Спецификация OpenAPI 3.0: [`openapi.yaml`](openapi.yaml) в корне репозитория.  
+Интерактивная документация при запуске backend: http://127.0.0.1:8000/docs  
+Проверка YAML: [Swagger Editor](https://editor.swagger.io/)
+
+| Метод | URI | Описание | Доступ (роль) | Код |
+|-------|-----|----------|---------------|-----|
+| GET | `/health` | Проверка API | Все | 200 |
+| POST | `/auth/register` | Регистрация | Все | 201 |
+| POST | `/auth/login` | Вход, выдача JWT | Все | 200 |
+| GET | `/cargo-requests` | Список заявок | Shipper / Admin | 200 |
+| POST | `/cargo-requests` | Создание заявки | Shipper | 201 |
+| GET | `/cargo-requests/{request_id}` | Заявка по ID | Авторизованный | 200 |
+| PATCH | `/cargo-requests/{request_id}` | Обновление статуса/полей | Shipper / Admin | 200 |
+| DELETE | `/cargo-requests/{request_id}` | Отмена заявки | Shipper / Admin | 204 |
+| GET | `/trips` | Список рейсов | Carrier / Admin | 200 |
+| POST | `/trips` | Создание рейса | Carrier | 201 |
+| GET | `/trips/{trip_id}` | Рейс по ID | Авторизованный | 200 |
+| PATCH | `/trips/{trip_id}` | Обновление ёмкости/статуса | Carrier | 200 |
+| DELETE | `/trips/{trip_id}` | Удаление рейса | Carrier / Admin | 204 |
+| GET | `/matching/cargo-request/{request_id}` | Сопоставления заявки | Shipper / Carrier | 200 |
+| POST | `/matching/cargo-request/{request_id}/suggest` | Автоподбор рейсов | Shipper / Admin | 200 |
+
+Отчёт Lab#02 и контрольные вопросы: [`docs/LAB02_REPORT.md`](docs/LAB02_REPORT.md).
+
+---
+
+## 8. Стек технологий
 
 | Слой | Технология |
 |------|------------|
@@ -300,7 +328,7 @@ ORM-модели в `backend/app/models/` соответствуют ERD: `users
 
 ---
 
-## 8. Контрольные вопросы (Lab#01)
+## 9. Контрольные вопросы (Lab#01)
 
 **1. Монолит vs микросервисы**
 
@@ -315,7 +343,7 @@ ORM-модели в `backend/app/models/` соответствуют ERD: `users
 
 ---
 
-## 9. Ссылки по методичке
+## 10. Ссылки по методичке
 
 - C4 Model: [habr.com/ru/articles/778726](https://habr.com/ru/articles/778726)
 - ERD и нормализация: [github.com/kolei/PiRIS/.../erd2.md](https://github.com/kolei/PiRIS/blob/master/articles/5_1_1_1_erd2.md)

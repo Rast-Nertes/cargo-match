@@ -10,6 +10,8 @@
 |------|----------|
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Архитектура: Use Cases, C4, ERD (Lab#01) |
 | [`docs/LAB01_REPORT.md`](docs/LAB01_REPORT.md) | Отчёт по лабораторной работе №1 |
+| [`openapi.yaml`](openapi.yaml) | OpenAPI 3.0 (Lab#02) |
+| [`docs/LAB02_REPORT.md`](docs/LAB02_REPORT.md) | Отчёт Lab#02 + контрольные вопросы |
 | [`docs/diagrams/`](docs/diagrams/) | Диаграммы Mermaid, PlantUML, SVG |
 | [`backend/`](backend/) | FastAPI, async SQLAlchemy, API `/api/v1` |
 | [`frontend/`](frontend/) | Vue 3 + Tailwind CSS 4 (Vite) |
@@ -55,6 +57,8 @@ npm run dev
 UI: http://localhost:5173  
 
 ## Лабораторная работа №1
+
+Лабораторная работа №2 ([Lab#02_OpenAPI.pdf](https://drive.google.com/file/d/1b9f8ZBFwL9RSH6tG27yjEKWKbfLFp3MT/view)): таблица эндпоинтов в `ARCHITECTURE.md`, спецификация `openapi.yaml`, Swagger UI на `/docs`.
 
 Лабораторная работа №1 ([Lab#01_Architecture.pdf](https://drive.google.com/file/d/1DbGneXNqwrZ2HDeS1qDw4iAqQ_xSyVjU/view)) **выполнена полностью**:
 

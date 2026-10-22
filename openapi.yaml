@@ -1,0 +1,681 @@
+openapi: 3.0.3
+info:
+  title: CargoMatch API
+  description: |
+    REST API платформы агрегации заявок на грузоперевозки
+    с автоматическим сопоставлением и учётом обратных рейсов.
+    Лабораторная работа №2 — OpenAPI 3.0.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Локальный сервер разработки (FastAPI + Uvicorn)
+
+tags:
+  - name: Auth
+    description: Регистрация и аутентификация
+  - name: CargoRequests
+    description: Заявки грузовладельцев
+  - name: Trips
+    description: Рейсы перевозчиков
+  - name: Matching
+    description: Автосопоставление заявок и рейсов
+  - name: Health
+    description: Проверка доступности сервиса
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Проверка состояния API
+      operationId: healthCheck
+      responses:
+        "200":
+          description: Сервис доступен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Регистрация пользователя
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCreateRequest"
+      responses:
+        "201":
+          description: Пользователь создан
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          description: Email уже зарегистрирован
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Вход и получение JWT
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLoginRequest"
+      responses:
+        "200":
+          description: Успешная аутентификация
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /cargo-requests:
+    get:
+      tags: [CargoRequests]
+      summary: Список заявок на перевозку
+      operationId: listCargoRequests
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          required: false
+          description: Фильтр по статусу заявки
+          schema:
+            $ref: "#/components/schemas/CargoRequestStatus"
+      responses:
+        "200":
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CargoRequestResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      tags: [CargoRequests]
+      summary: Создание заявки
+      operationId: createCargoRequest
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CargoRequestCreateRequest"
+      responses:
+        "201":
+          description: Заявка создана
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CargoRequestResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /cargo-requests/{request_id}:
+    get:
+      tags: [CargoRequests]
+      summary: Получение заявки по ID
+      operationId: getCargoRequest
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/RequestId"
+      responses:
+        "200":
+          description: Заявка найдена
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CargoRequestResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      tags: [CargoRequests]
+      summary: Частичное обновление заявки
+      operationId: updateCargoRequest
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/RequestId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CargoRequestUpdateRequest"
+      responses:
+        "200":
+          description: Заявка обновлена
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CargoRequestResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [CargoRequests]
+      summary: Удаление (отмена) заявки
+      operationId: deleteCargoRequest
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/RequestId"
+      responses:
+        "204":
+          description: Заявка удалена
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /trips:
+    get:
+      tags: [Trips]
+      summary: Список рейсов перевозчиков
+      operationId: listTrips
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: is_return_leg
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: Только обратные рейсы
+      responses:
+        "200":
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TripResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      tags: [Trips]
+      summary: Создание рейса
+      operationId: createTrip
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TripCreateRequest"
+      responses:
+        "201":
+          description: Рейс создан
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TripResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /trips/{trip_id}:
+    get:
+      tags: [Trips]
+      summary: Получение рейса по ID
+      operationId: getTrip
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/TripId"
+      responses:
+        "200":
+          description: Рейс найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TripResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      tags: [Trips]
+      summary: Частичное обновление рейса
+      operationId: updateTrip
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/TripId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TripUpdateRequest"
+      responses:
+        "200":
+          description: Рейс обновлён
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TripResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [Trips]
+      summary: Удаление рейса
+      operationId: deleteTrip
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/TripId"
+      responses:
+        "204":
+          description: Рейс удалён
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /matching/cargo-request/{request_id}:
+    get:
+      tags: [Matching]
+      summary: Список сопоставлений для заявки
+      operationId: listMatchesForRequest
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/RequestId"
+      responses:
+        "200":
+          description: Список matches
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MatchResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /matching/cargo-request/{request_id}/suggest:
+    post:
+      tags: [Matching]
+      summary: Запуск автоматического подбора рейсов
+      operationId: suggestMatches
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/RequestId"
+      responses:
+        "200":
+          description: Созданные или найденные сопоставления
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MatchResponse"
+        "404":
+          description: Заявка не найдена или нет подходящих рейсов
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Конфликт (дубликат сопоставления)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    RequestId:
+      name: request_id
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+      description: Идентификатор заявки
+    TripId:
+      name: trip_id
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+      description: Идентификатор рейса
+
+  responses:
+    BadRequest:
+      description: Ошибка валидации входных данных
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Unauthorized:
+      description: Не аутентифицирован
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: Ресурс не найден
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+  schemas:
+    ErrorResponse:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          example: INVALID_INPUT
+        message:
+          type: string
+          example: Поле weight_kg должно быть больше 0
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-10-22T12:00:00Z"
+
+    UserRole:
+      type: string
+      enum: [shipper, carrier, admin]
+
+    UserCreateRequest:
+      type: object
+      required: [email, password, full_name]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        full_name:
+          type: string
+        company_name:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        role:
+          $ref: "#/components/schemas/UserRole"
+
+    UserLoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        full_name:
+          type: string
+        company_name:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        role:
+          $ref: "#/components/schemas/UserRole"
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    TokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+          example: bearer
+
+    CargoRequestStatus:
+      type: string
+      enum: [draft, published, matched, in_transit, completed, cancelled]
+
+    CargoRequestCreateRequest:
+      type: object
+      required:
+        - origin_city
+        - destination_city
+        - cargo_description
+        - weight_kg
+        - pickup_date_from
+      properties:
+        origin_city:
+          type: string
+        origin_address:
+          type: string
+          nullable: true
+        destination_city:
+          type: string
+        destination_address:
+          type: string
+          nullable: true
+        cargo_description:
+          type: string
+        weight_kg:
+          type: number
+          format: double
+          exclusiveMinimum: 0
+        volume_m3:
+          type: number
+          format: double
+          exclusiveMinimum: 0
+          nullable: true
+        pickup_date_from:
+          type: string
+          format: date
+        pickup_date_to:
+          type: string
+          format: date
+          nullable: true
+        delivery_date:
+          type: string
+          format: date
+          nullable: true
+        price:
+          type: number
+          format: double
+          minimum: 0
+          nullable: true
+        currency:
+          type: string
+          default: RUB
+
+    CargoRequestUpdateRequest:
+      type: object
+      properties:
+        origin_city:
+          type: string
+        destination_city:
+          type: string
+        cargo_description:
+          type: string
+        weight_kg:
+          type: number
+          format: double
+          exclusiveMinimum: 0
+        status:
+          $ref: "#/components/schemas/CargoRequestStatus"
+        price:
+          type: number
+          format: double
+          minimum: 0
+
+    CargoRequestResponse:
+      allOf:
+        - $ref: "#/components/schemas/CargoRequestCreateRequest"
+        - type: object
+          properties:
+            id:
+              type: integer
+            owner_id:
+              type: integer
+            status:
+              $ref: "#/components/schemas/CargoRequestStatus"
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+
+    TripStatus:
+      type: string
+      enum: [planned, available, partially_loaded, in_transit, completed, cancelled]
+
+    TripCreateRequest:
+      type: object
+      required:
+        - origin_city
+        - destination_city
+        - departure_date
+        - vehicle_type
+        - capacity_kg
+        - free_capacity_kg
+      properties:
+        origin_city:
+          type: string
+        destination_city:
+          type: string
+        departure_date:
+          type: string
+          format: date
+        arrival_date:
+          type: string
+          format: date
+          nullable: true
+        vehicle_type:
+          type: string
+        capacity_kg:
+          type: number
+          format: double
+          exclusiveMinimum: 0
+        capacity_m3:
+          type: number
+          format: double
+          exclusiveMinimum: 0
+          nullable: true
+        free_capacity_kg:
+          type: number
+          format: double
+          exclusiveMinimum: 0
+        is_return_leg:
+          type: boolean
+          default: false
+        notes:
+          type: string
+          nullable: true
+
+    TripUpdateRequest:
+      type: object
+      properties:
+        departure_date:
+          type: string
+          format: date
+        free_capacity_kg:
+          type: number
+          format: double
+          exclusiveMinimum: 0
+        status:
+          $ref: "#/components/schemas/TripStatus"
+        notes:
+          type: string
+          nullable: true
+
+    TripResponse:
+      allOf:
+        - $ref: "#/components/schemas/TripCreateRequest"
+        - type: object
+          properties:
+            id:
+              type: integer
+            carrier_id:
+              type: integer
+            vehicle_id:
+              type: integer
+              nullable: true
+            status:
+              $ref: "#/components/schemas/TripStatus"
+            created_at:
+              type: string
+              format: date-time
+
+    MatchStatus:
+      type: string
+      enum: [suggested, accepted, rejected, expired]
+
+    MatchResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        cargo_request_id:
+          type: integer
+        trip_id:
+          type: integer
+        score:
+          type: number
+          format: double
+        is_backhaul:
+          type: boolean
+        status:
+          $ref: "#/components/schemas/MatchStatus"
+        comment:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
